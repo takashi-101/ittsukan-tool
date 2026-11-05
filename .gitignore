@@ -1,0 +1,5 @@
+cases/
+mcp/logs/
+__pycache__/
+test/screenshots/
+*.json.tmp

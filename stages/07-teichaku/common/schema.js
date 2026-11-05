@@ -1,0 +1,1273 @@
+/* 自動で作ったファイル（tools/sync_common.py）。直接直さず、元のファイルを直して作り直す。 */
+window.ITTSUKAN_SCHEMA = {
+ "kind": "ittsukan-schema",
+ "schema_version": "1",
+ "sheet_kind": "kouteihyo",
+ "stages": [
+  {
+   "id": "yoken",
+   "no": 1,
+   "folder": "01-yoken",
+   "name": "要件定義",
+   "plain": "何に困っていて、何ができればよいかを決める",
+   "stuck": "何から決めればよいか分からない、現場の話がまとまらない",
+   "upstream": [],
+   "sections": [
+    {
+     "id": "genjo",
+     "prefix": "W",
+     "name": "現状の業務",
+     "help": "今、誰がどんな手順でしている仕事か。業務棚卸し（gyomu-tanaoroshi）のJSONから読み込めます。",
+     "fields": [
+      {
+       "key": "title",
+       "label": "業務名",
+       "type": "text",
+       "required": true
+      },
+      {
+       "key": "who",
+       "label": "担当（課・係と役割。個人名は書かない）",
+       "type": "text"
+      },
+      {
+       "key": "flow",
+       "label": "今の手順",
+       "type": "textarea",
+       "required": true
+      },
+      {
+       "key": "hours",
+       "label": "月の作業時間（時間）",
+       "type": "number"
+      },
+      {
+       "key": "issues",
+       "label": "課題のメモ（滞留・手戻り・割り込みなど）",
+       "type": "textarea"
+      }
+     ]
+    },
+    {
+     "id": "komari",
+     "prefix": "P",
+     "name": "困りごと",
+     "help": "現場で起きている困りごと。どの業務で起きているかを「もとになった項目」に書きます。",
+     "from": [
+      "genjo"
+     ],
+     "fields": [
+      {
+       "key": "title",
+       "label": "困りごと",
+       "type": "text",
+       "required": true
+      },
+      {
+       "key": "detail",
+       "label": "具体的な様子（いつ・どのくらい）",
+       "type": "textarea"
+      }
+     ]
+    },
+    {
+     "id": "mokuteki",
+     "prefix": "G",
+     "name": "目的",
+     "help": "この仕組みで何を良くしたいか。良くなったかの確かめ方も書きます。",
+     "from": [
+      "komari"
+     ],
+     "fields": [
+      {
+       "key": "title",
+       "label": "目的",
+       "type": "text",
+       "required": true
+      },
+      {
+       "key": "measure",
+       "label": "確かめ方（何がどうなればよいか）",
+       "type": "textarea",
+       "required": true
+      }
+     ]
+    },
+    {
+     "id": "kino",
+     "prefix": "R",
+     "name": "必要な機能",
+     "help": "目的のために要る機能（要件）。どの目的のための機能かを「もとになった項目」に書きます。",
+     "from": [
+      "mokuteki",
+      "komari"
+     ],
+     "fields": [
+      {
+       "key": "title",
+       "label": "機能",
+       "type": "text",
+       "required": true
+      },
+      {
+       "key": "detail",
+       "label": "内容",
+       "type": "textarea",
+       "required": true
+      },
+      {
+       "key": "priority",
+       "label": "優先度",
+       "type": "select",
+       "options": [
+        "必須",
+        "できれば",
+        "今回は見送り"
+       ],
+       "required": true
+      }
+     ]
+    },
+    {
+     "id": "taishogai",
+     "prefix": "X",
+     "name": "対象外にすること",
+     "help": "今回は作らない・扱わないと決めたこと。後で「頼んでいない」「入っていない」の食い違いを防ぎます。",
+     "fields": [
+      {
+       "key": "title",
+       "label": "対象外にすること",
+       "type": "text",
+       "required": true
+      },
+      {
+       "key": "reason",
+       "label": "理由",
+       "type": "textarea"
+      }
+     ]
+    }
+   ],
+   "coverage": [
+    {
+     "section": "mokuteki",
+     "must_cover": {
+      "stage": "yoken",
+      "section": "komari"
+     },
+     "message": "目的につながっていない困りごと",
+     "level": "要対応"
+    },
+    {
+     "section": "kino",
+     "must_cover": {
+      "stage": "yoken",
+      "section": "mokuteki"
+     },
+     "message": "機能が一つも無い目的",
+     "level": "要対応"
+    }
+   ]
+  },
+  {
+   "id": "kihon",
+   "no": 2,
+   "folder": "02-kihon-sekkei",
+   "name": "基本設計（外部設計）",
+   "plain": "使う人から見える部分（画面・帳票・扱う項目・外とのやり取り）を決める",
+   "stuck": "要件は出たが、画面や帳票の形が浮かばない",
+   "upstream": [
+    "yoken"
+   ],
+   "sections": [
+    {
+     "id": "gamen",
+     "prefix": "SG",
+     "name": "画面",
+     "help": "使う人が見て操作する画面。どの機能（R）のための画面かを「もとになった項目」に書きます。",
+     "from": [
+      "yoken.kino"
+     ],
+     "fields": [
+      {
+       "key": "title",
+       "label": "画面名",
+       "type": "text",
+       "required": true
+      },
+      {
+       "key": "user",
+       "label": "使う人",
+       "type": "text",
+       "required": true
+      },
+      {
+       "key": "purpose",
+       "label": "この画面でできること",
+       "type": "textarea",
+       "required": true
+      },
+      {
+       "key": "items",
+       "label": "表示・入力する項目",
+       "type": "textarea"
+      }
+     ]
+    },
+    {
+     "id": "chohyo",
+     "prefix": "SC",
+     "name": "帳票",
+     "help": "印刷する・渡す書類（通知書、一覧表など）。",
+     "from": [
+      "yoken.kino"
+     ],
+     "fields": [
+      {
+       "key": "title",
+       "label": "帳票名",
+       "type": "text",
+       "required": true
+      },
+      {
+       "key": "to",
+       "label": "渡す相手",
+       "type": "text"
+      },
+      {
+       "key": "items",
+       "label": "載せる項目",
+       "type": "textarea",
+       "required": true
+      }
+     ]
+    },
+    {
+     "id": "data",
+     "prefix": "SD",
+     "name": "扱うデータ項目",
+     "help": "画面や帳票で扱う項目（氏名、学年など）。個人情報に当たるかも書きます。",
+     "from": [
+      "kihon.gamen",
+      "kihon.chohyo"
+     ],
+     "fields": [
+      {
+       "key": "title",
+       "label": "項目名",
+       "type": "text",
+       "required": true
+      },
+      {
+       "key": "meaning",
+       "label": "意味・例",
+       "type": "text"
+      },
+      {
+       "key": "personal",
+       "label": "個人情報に当たるか",
+       "type": "select",
+       "options": [
+        "当たる",
+        "当たらない",
+        "分からない"
+       ],
+       "required": true
+      }
+     ]
+    },
+    {
+     "id": "gaibu",
+     "prefix": "SX",
+     "name": "外部とのやり取り",
+     "help": "ほかのシステムや部署と、データを受け取る・渡すところ。",
+     "from": [
+      "yoken.kino"
+     ],
+     "fields": [
+      {
+       "key": "title",
+       "label": "やり取りの名前",
+       "type": "text",
+       "required": true
+      },
+      {
+       "key": "partner",
+       "label": "相手（システム・部署）",
+       "type": "text",
+       "required": true
+      },
+      {
+       "key": "direction",
+       "label": "向き",
+       "type": "select",
+       "options": [
+        "受け取る",
+        "渡す",
+        "両方"
+       ]
+      },
+      {
+       "key": "content",
+       "label": "やり取りする中身",
+       "type": "textarea"
+      }
+     ]
+    }
+   ],
+   "coverage": [
+    {
+     "section": [
+      "gamen",
+      "chohyo",
+      "gaibu"
+     ],
+     "must_cover": {
+      "stage": "yoken",
+      "section": "kino",
+      "where": {
+       "priority": "必須"
+      }
+     },
+     "message": "画面・帳票・外部とのやり取りのどこにも出てこない必須の機能",
+     "level": "要対応"
+    }
+   ]
+  },
+  {
+   "id": "shosai",
+   "no": 3,
+   "folder": "03-shosai-sekkei",
+   "name": "詳細設計（内部設計）",
+   "plain": "中の動き（処理の手順・データの型・入力チェック・エラー時の扱い）を決め、AIに渡せる仕様書にする",
+   "stuck": "画面は決まったが、中でどう動かすかを書けない",
+   "upstream": [
+    "kihon"
+   ],
+   "sections": [
+    {
+     "id": "shori",
+     "prefix": "DP",
+     "name": "処理の手順",
+     "help": "画面で何かをしたときに、中で行うこと（順番に）。",
+     "from": [
+      "kihon.gamen",
+      "kihon.chohyo",
+      "kihon.gaibu"
+     ],
+     "fields": [
+      {
+       "key": "title",
+       "label": "処理の名前",
+       "type": "text",
+       "required": true
+      },
+      {
+       "key": "trigger",
+       "label": "きっかけ（どの操作で始まるか）",
+       "type": "text"
+      },
+      {
+       "key": "steps",
+       "label": "手順（1行に1つ）",
+       "type": "textarea",
+       "required": true
+      }
+     ]
+    },
+    {
+     "id": "kata",
+     "prefix": "DT",
+     "name": "データの型",
+     "help": "項目ごとの型（文字・数・日付・選択肢など）と長さ。",
+     "from": [
+      "kihon.data"
+     ],
+     "fields": [
+      {
+       "key": "title",
+       "label": "項目名",
+       "type": "text",
+       "required": true
+      },
+      {
+       "key": "type",
+       "label": "型",
+       "type": "select",
+       "options": [
+        "文字",
+        "数",
+        "日付",
+        "選択肢",
+        "はい・いいえ",
+        "郵便番号",
+        "電話番号",
+        "金額"
+       ],
+       "required": true
+      },
+      {
+       "key": "detail",
+       "label": "長さ・範囲・選択肢",
+       "type": "text"
+      }
+     ]
+    },
+    {
+     "id": "check",
+     "prefix": "DV",
+     "name": "入力チェック",
+     "help": "入力された値が正しいかを確かめる決まり。申請書類 記載漏れ確認ツール（shinsei-fubi-check）の設定として書き出せます。",
+     "from": [
+      "shosai.kata"
+     ],
+     "fields": [
+      {
+       "key": "title",
+       "label": "欄名",
+       "type": "text",
+       "required": true
+      },
+      {
+       "key": "required",
+       "label": "必須か",
+       "type": "select",
+       "options": [
+        "必須",
+        "任意"
+       ],
+       "required": true
+      },
+      {
+       "key": "format",
+       "label": "書式",
+       "type": "select",
+       "options": [
+        "文字",
+        "日付",
+        "数字のみ",
+        "郵便番号",
+        "電話番号",
+        "金額",
+        "選択肢",
+        "記載の有無のみ"
+       ],
+       "required": true
+      },
+      {
+       "key": "options",
+       "label": "選択肢（読点で区切る）",
+       "type": "text"
+      },
+      {
+       "key": "rule",
+       "label": "決まりの説明",
+       "type": "textarea"
+      }
+     ]
+    },
+    {
+     "id": "tenpu",
+     "prefix": "DA",
+     "name": "添付書類",
+     "help": "申請に添える書類。条件付き（ある欄がある値のときだけ要る）も書けます。",
+     "from": [
+      "kihon.gamen"
+     ],
+     "fields": [
+      {
+       "key": "title",
+       "label": "書類名",
+       "type": "text",
+       "required": true
+      },
+      {
+       "key": "need",
+       "label": "要るか",
+       "type": "select",
+       "options": [
+        "必須",
+        "条件付き",
+        "任意"
+       ],
+       "required": true
+      },
+      {
+       "key": "cond_field",
+       "label": "条件の欄名（条件付きのとき）",
+       "type": "text"
+      },
+      {
+       "key": "cond_values",
+       "label": "条件の値（読点で区切る）",
+       "type": "text"
+      }
+     ]
+    },
+    {
+     "id": "kimari",
+     "prefix": "DR",
+     "name": "判定の決まり",
+     "help": "選考の順番、料金の計算などの決まり。実在の基準か、見本のための架空の基準かを必ず書きます。",
+     "from": [
+      "kihon.gamen",
+      "kihon.chohyo"
+     ],
+     "fields": [
+      {
+       "key": "title",
+       "label": "決まりの名前",
+       "type": "text",
+       "required": true
+      },
+      {
+       "key": "basis_kind",
+       "label": "基準の種類",
+       "type": "select",
+       "options": [
+        "実在の基準（例規・要綱など）",
+        "架空の基準"
+       ],
+       "required": true
+      },
+      {
+       "key": "basis",
+       "label": "根拠（例規・要綱の名前と条）",
+       "type": "text"
+      },
+      {
+       "key": "rule",
+       "label": "決まりの中身",
+       "type": "textarea",
+       "required": true
+      }
+     ]
+    },
+    {
+     "id": "error",
+     "prefix": "DE",
+     "name": "エラー時の扱い",
+     "help": "うまくいかなかったとき（入力の誤り、満員、通信の失敗など）に、何を表示しどうするか。",
+     "from": [
+      "shosai.shori",
+      "shosai.check"
+     ],
+     "fields": [
+      {
+       "key": "title",
+       "label": "起きること",
+       "type": "text",
+       "required": true
+      },
+      {
+       "key": "message",
+       "label": "使う人に出す案内",
+       "type": "textarea",
+       "required": true
+      },
+      {
+       "key": "action",
+       "label": "中ですること",
+       "type": "textarea"
+      }
+     ]
+    }
+   ],
+   "coverage": [
+    {
+     "section": "shori",
+     "must_cover": {
+      "stage": "kihon",
+      "section": "gamen"
+     },
+     "message": "処理の手順が一つも無い画面",
+     "level": "要対応"
+    },
+    {
+     "section": "kata",
+     "must_cover": {
+      "stage": "kihon",
+      "section": "data"
+     },
+     "message": "型が決まっていないデータ項目",
+     "level": "要対応"
+    }
+   ]
+  },
+  {
+   "id": "jisso",
+   "no": 4,
+   "folder": "04-jisso",
+   "name": "実装（試作とデバッグ）",
+   "plain": "AIに作ってもらう依頼文と試作の雛形を作り、エラーの原因を確かめる",
+   "stuck": "仕様はあるが、試作やデバッグ（不具合の原因探し）ができない",
+   "upstream": [
+    "shosai"
+   ],
+   "sections": [
+    {
+     "id": "irai",
+     "prefix": "IP",
+     "name": "AIへの実装依頼文",
+     "help": "AIに試作を頼む文章。詳細設計の工程票から下書きを作れます。",
+     "from": [
+      "shosai.shori",
+      "shosai.check",
+      "shosai.kimari",
+      "shosai.error"
+     ],
+     "fields": [
+      {
+       "key": "title",
+       "label": "依頼の名前",
+       "type": "text",
+       "required": true
+      },
+      {
+       "key": "prompt",
+       "label": "依頼文",
+       "type": "textarea",
+       "required": true
+      },
+      {
+       "key": "status",
+       "label": "状態",
+       "type": "select",
+       "options": [
+        "下書き",
+        "AIに渡した",
+        "試作ができた"
+       ]
+      }
+     ]
+    },
+    {
+     "id": "hinagata",
+     "prefix": "IS",
+     "name": "試作の雛形",
+     "help": "1ファイルのHTMLの雛形（画面の形と入力チェックだけ）。詳細設計の工程票から作れます。",
+     "from": [
+      "shosai.check"
+     ],
+     "fields": [
+      {
+       "key": "title",
+       "label": "雛形の名前",
+       "type": "text",
+       "required": true
+      },
+      {
+       "key": "file",
+       "label": "ファイル名",
+       "type": "text"
+      },
+      {
+       "key": "note",
+       "label": "メモ",
+       "type": "textarea"
+      }
+     ]
+    },
+    {
+     "id": "error",
+     "prefix": "IE",
+     "name": "エラーの原因候補と確かめ方",
+     "help": "試作で出たエラーの文章を貼ると、よくある原因の候補と確かめ方を出します（AIは使いません）。",
+     "from": [
+      "jisso.irai",
+      "jisso.hinagata"
+     ],
+     "fields": [
+      {
+       "key": "title",
+       "label": "エラーの文章",
+       "type": "textarea",
+       "required": true
+      },
+      {
+       "key": "causes",
+       "label": "原因の候補",
+       "type": "textarea",
+       "required": true
+      },
+      {
+       "key": "howto",
+       "label": "確かめ方",
+       "type": "textarea",
+       "required": true
+      },
+      {
+       "key": "state",
+       "label": "状態",
+       "type": "select",
+       "options": [
+        "調べ中",
+        "原因が分かった",
+        "直った"
+       ]
+      }
+     ]
+    }
+   ],
+   "coverage": [
+    {
+     "section": "irai",
+     "must_cover": {
+      "stage": "shosai",
+      "section": "shori"
+     },
+     "message": "実装依頼文に入っていない処理の手順",
+     "level": "要対応"
+    }
+   ]
+  },
+  {
+   "id": "test",
+   "no": 5,
+   "folder": "05-test",
+   "name": "テスト（検収）",
+   "plain": "頼んだとおりにできているかを、要件ごとに確かめて受け取るかを決める",
+   "stuck": "できあがったものを、何をもって受け取ってよいか判断できない",
+   "upstream": [
+    "yoken",
+    "jisso"
+   ],
+   "sections": [
+    {
+     "id": "kakunin",
+     "prefix": "TC",
+     "name": "要件ごとの確認項目",
+     "help": "必要な機能（R）ごとに、何をしてどうなれば合格かを書きます。要件定義の工程票から下書きを作れます。",
+     "from": [
+      "yoken.kino"
+     ],
+     "fields": [
+      {
+       "key": "title",
+       "label": "確認すること",
+       "type": "text",
+       "required": true
+      },
+      {
+       "key": "procedure",
+       "label": "確かめ方（操作）",
+       "type": "textarea",
+       "required": true
+      },
+      {
+       "key": "expected",
+       "label": "合格の条件",
+       "type": "textarea",
+       "required": true
+      },
+      {
+       "key": "result",
+       "label": "結果",
+       "type": "select",
+       "options": [
+        "未実施",
+        "合格",
+        "不合格"
+       ],
+       "required": true
+      },
+      {
+       "key": "memo",
+       "label": "メモ",
+       "type": "textarea"
+      }
+     ]
+    },
+    {
+     "id": "taisho",
+     "prefix": "TR",
+     "name": "依頼と出力",
+     "help": "AIに渡した依頼文と、AIが返した出力（試作のコードや文章）。食い違いの印の対象です。",
+     "from": [
+      "jisso.irai"
+     ],
+     "fields": [
+      {
+       "key": "title",
+       "label": "名前",
+       "type": "text",
+       "required": true
+      },
+      {
+       "key": "request",
+       "label": "依頼文",
+       "type": "textarea",
+       "required": true
+      },
+      {
+       "key": "output",
+       "label": "AIの出力",
+       "type": "textarea",
+       "required": true
+      }
+     ]
+    },
+    {
+     "id": "shirushi",
+     "prefix": "TM",
+     "name": "依頼と出力の食い違い",
+     "help": "頼んでいないのにAIが決めたこと（落とした・足した・選んだ・寄せた）。AIが決めたことチェック（ai-decision-audit）と同じ印です。",
+     "from": [
+      "test.taisho"
+     ],
+     "fields": [
+      {
+       "key": "type",
+       "label": "印の種類",
+       "type": "select",
+       "options": [
+        "落とした",
+        "足した",
+        "選んだ",
+        "寄せた"
+       ],
+       "required": true
+      },
+      {
+       "key": "output_quote",
+       "label": "出力の該当箇所（無ければ「なし」）",
+       "type": "textarea",
+       "required": true
+      },
+      {
+       "key": "request_quote",
+       "label": "依頼文の対応箇所（無ければ「なし」）",
+       "type": "textarea",
+       "required": true
+      },
+      {
+       "key": "reason",
+       "label": "理由（一行）",
+       "type": "text",
+       "required": true
+      },
+      {
+       "key": "decision",
+       "label": "採る・採らない",
+       "type": "select",
+       "options": [
+        "未選択",
+        "採る",
+        "採らない"
+       ],
+       "required": true
+      },
+      {
+       "key": "memo",
+       "label": "メモ",
+       "type": "textarea"
+      }
+     ]
+    },
+    {
+     "id": "kenshu",
+     "prefix": "TA",
+     "name": "検収の判断",
+     "help": "確認の結果をふまえて、受け取るかどうか。",
+     "from": [
+      "test.kakunin",
+      "test.shirushi"
+     ],
+     "fields": [
+      {
+       "key": "title",
+       "label": "判断",
+       "type": "select",
+       "options": [
+        "受け取る",
+        "直してから受け取る",
+        "受け取らない"
+       ],
+       "required": true
+      },
+      {
+       "key": "reason",
+       "label": "理由",
+       "type": "textarea",
+       "required": true
+      },
+      {
+       "key": "date",
+       "label": "日付",
+       "type": "text"
+      }
+     ]
+    }
+   ],
+   "coverage": [
+    {
+     "section": "kakunin",
+     "must_cover": {
+      "stage": "yoken",
+      "section": "kino",
+      "where": {
+       "priority": "必須"
+      }
+     },
+     "message": "確認項目（テスト）の無い必須の機能",
+     "level": "要対応"
+    }
+   ],
+   "flags": [
+    {
+     "section": "kakunin",
+     "field": "result",
+     "equals": "未実施",
+     "message": "結果が未実施の確認項目",
+     "level": "参考"
+    },
+    {
+     "section": "kakunin",
+     "field": "result",
+     "equals": "不合格",
+     "message": "不合格の確認項目",
+     "level": "要対応"
+    },
+    {
+     "section": "shirushi",
+     "field": "decision",
+     "equals": "未選択",
+     "message": "採る・採らないが未選択の印",
+     "level": "要対応"
+    }
+   ]
+  },
+  {
+   "id": "donyu",
+   "no": 6,
+   "folder": "06-donyu",
+   "name": "導入（リリース）",
+   "plain": "現場に渡す手順、切り替えの段取り、使う人への説明を用意する",
+   "stuck": "できたものを、現場でいつ・どう使い始めればよいか分からない",
+   "upstream": [
+    "yoken",
+    "test"
+   ],
+   "sections": [
+    {
+     "id": "tejun",
+     "prefix": "LS",
+     "name": "現場へ渡す手順",
+     "help": "使い始めるまでにすること（設定、配る物、研修など）。どの機能のための手順かを書きます。",
+     "from": [
+      "yoken.kino",
+      "test.kakunin"
+     ],
+     "fields": [
+      {
+       "key": "title",
+       "label": "すること",
+       "type": "text",
+       "required": true
+      },
+      {
+       "key": "who",
+       "label": "する人（係・役割）",
+       "type": "text",
+       "required": true
+      },
+      {
+       "key": "when",
+       "label": "いつまでに",
+       "type": "text"
+      },
+      {
+       "key": "detail",
+       "label": "内容",
+       "type": "textarea"
+      }
+     ]
+    },
+    {
+     "id": "kirikae",
+     "prefix": "LC",
+     "name": "切り替えの段取り",
+     "help": "今のやり方から新しいやり方へ移る順番。並行して使う期間と、元に戻す方法も書きます。",
+     "from": [
+      "donyu.tejun"
+     ],
+     "fields": [
+      {
+       "key": "title",
+       "label": "段階",
+       "type": "text",
+       "required": true
+      },
+      {
+       "key": "period",
+       "label": "期間",
+       "type": "text",
+       "required": true
+      },
+      {
+       "key": "detail",
+       "label": "内容",
+       "type": "textarea",
+       "required": true
+      },
+      {
+       "key": "rollback",
+       "label": "うまくいかないときに元に戻す方法",
+       "type": "textarea",
+       "required": true
+      }
+     ]
+    },
+    {
+     "id": "setsumei",
+     "prefix": "LE",
+     "name": "使う人向けの説明",
+     "help": "使う人（住民・職員など）に向けた説明。A4で印刷できます。",
+     "from": [
+      "yoken.kino",
+      "donyu.tejun"
+     ],
+     "fields": [
+      {
+       "key": "title",
+       "label": "見出し",
+       "type": "text",
+       "required": true
+      },
+      {
+       "key": "audience",
+       "label": "読む人",
+       "type": "text",
+       "required": true
+      },
+      {
+       "key": "body",
+       "label": "本文",
+       "type": "textarea",
+       "required": true
+      }
+     ]
+    },
+    {
+     "id": "faq",
+     "prefix": "LQ",
+     "name": "よくある問い合わせ",
+     "help": "使い始めに来そうな問い合わせと回答。窓口回答標準化ツール（madoguchi-kaito）の台帳として書き出せます。",
+     "from": [
+      "donyu.setsumei",
+      "yoken.kino"
+     ],
+     "fields": [
+      {
+       "key": "major",
+       "label": "大分類",
+       "type": "text",
+       "required": true
+      },
+      {
+       "key": "minor",
+       "label": "小分類",
+       "type": "text",
+       "required": true
+      },
+      {
+       "key": "title",
+       "label": "よくある問い合わせ",
+       "type": "text",
+       "required": true
+      },
+      {
+       "key": "answer",
+       "label": "標準回答",
+       "type": "textarea",
+       "required": true
+      },
+      {
+       "key": "basis",
+       "label": "根拠（文書名・条など）",
+       "type": "text"
+      },
+      {
+       "key": "kakari",
+       "label": "担当の係",
+       "type": "text"
+      }
+     ]
+    }
+   ],
+   "coverage": [
+    {
+     "section": "tejun",
+     "must_cover": {
+      "stage": "yoken",
+      "section": "kino",
+      "where": {
+       "priority": "必須"
+      }
+     },
+     "message": "導入の手順が無い必須の機能",
+     "level": "要対応"
+    }
+   ]
+  },
+  {
+   "id": "teichaku",
+   "no": 7,
+   "folder": "07-teichaku",
+   "name": "定着（運用・引継ぎ）",
+   "plain": "担当が替わっても回るように、手順書と判断の分かれ目を残す",
+   "stuck": "使い始めたが、担当が替わると回らなくなりそう",
+   "upstream": [
+    "donyu"
+   ],
+   "sections": [
+    {
+     "id": "manual",
+     "prefix": "MP",
+     "name": "手順書",
+     "help": "毎日・毎年の作業の手順。業務棚卸し（gyomu-tanaoroshi）の業務として書き出せます。",
+     "from": [
+      "donyu.tejun",
+      "donyu.kirikae"
+     ],
+     "fields": [
+      {
+       "key": "title",
+       "label": "業務名",
+       "type": "text",
+       "required": true
+      },
+      {
+       "key": "division",
+       "label": "課名",
+       "type": "text",
+       "required": true
+      },
+      {
+       "key": "kakari",
+       "label": "係名",
+       "type": "text",
+       "required": true
+      },
+      {
+       "key": "role",
+       "label": "役割（個人名は書かない）",
+       "type": "text"
+      },
+      {
+       "key": "freq",
+       "label": "頻度",
+       "type": "select",
+       "options": [
+        "日",
+        "週",
+        "月",
+        "年"
+       ],
+       "required": true
+      },
+      {
+       "key": "steps",
+       "label": "手順（1行に1つ）",
+       "type": "textarea",
+       "required": true
+      }
+     ]
+    },
+    {
+     "id": "hikitsugi",
+     "prefix": "MH",
+     "name": "判断の分かれ目と引継ぎ",
+     "help": "経験が要る判断を、次の人に渡すための記録。業務棚卸しの「事務引継ぎ記録」と同じ欄です。",
+     "from": [
+      "teichaku.manual"
+     ],
+     "fields": [
+      {
+       "key": "title",
+       "label": "判断の分かれ目（どこで・何を見て・どう決めたか）",
+       "type": "textarea",
+       "required": true
+      },
+      {
+       "key": "reason",
+       "label": "そう判断した理由",
+       "type": "textarea",
+       "required": true
+      },
+      {
+       "key": "whyNot",
+       "label": "他のやり方を取らない理由",
+       "type": "textarea"
+      },
+      {
+       "key": "exceptions",
+       "label": "例外の扱い",
+       "type": "textarea"
+      },
+      {
+       "key": "nonTransferable",
+       "label": "渡せない部分とその理由（空欄でもよい）",
+       "type": "textarea"
+      },
+      {
+       "key": "next",
+       "label": "次の人への手順（言葉にできた部分だけ）",
+       "type": "textarea"
+      }
+     ]
+    },
+    {
+     "id": "minaoshi",
+     "prefix": "MR",
+     "name": "見直しの時期",
+     "help": "手順書や決まりを見直す時期と、見る人（係・役割）。",
+     "from": [
+      "teichaku.manual",
+      "teichaku.hikitsugi"
+     ],
+     "fields": [
+      {
+       "key": "title",
+       "label": "見直すこと",
+       "type": "text",
+       "required": true
+      },
+      {
+       "key": "when",
+       "label": "時期",
+       "type": "text",
+       "required": true
+      },
+      {
+       "key": "who",
+       "label": "見る人（係・役割）",
+       "type": "text",
+       "required": true
+      }
+     ]
+    }
+   ],
+   "coverage": [
+    {
+     "section": "manual",
+     "must_cover": {
+      "stage": "donyu",
+      "section": "tejun"
+     },
+     "message": "手順書の無い導入の手順",
+     "level": "参考"
+    },
+    {
+     "section": "minaoshi",
+     "must_cover": {
+      "stage": "teichaku",
+      "section": "manual"
+     },
+     "message": "見直しの時期が決まっていない手順書",
+     "level": "要対応"
+    }
+   ]
+  }
+ ]
+};

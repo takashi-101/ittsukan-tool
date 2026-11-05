@@ -1,0 +1,216 @@
+{
+  "kind": "kouteihyo",
+  "stage": "kihon",
+  "schema_version": "1",
+  "case": {
+    "id": "houkago-club",
+    "name": "放課後児童クラブの利用申請（架空市・見本）"
+  },
+  "updated": "2026-11-05T00:00:00Z",
+  "upstream": [
+    {
+      "stage": "yoken",
+      "file": "01-yoken.json",
+      "updated": "2026-11-05T00:00:00Z"
+    }
+  ],
+  "items": [
+    {
+      "id": "SG-01",
+      "section": "gamen",
+      "title": "申込の画面（保護者用）",
+      "user": "保護者",
+      "purpose": "児童と保護者の情報、利用の理由、利用したいクラブを入力し、添付書類を付けて申し込む。",
+      "items": "保護者の氏名、住所、電話番号、児童の氏名、学年、利用したいクラブ、利用の理由、就労の時間（月）、ひとり親か、きょうだいの在籍、添付書類",
+      "from": [
+        "R-01",
+        "R-02"
+      ]
+    },
+    {
+      "id": "SG-02",
+      "section": "gamen",
+      "title": "申込の確認の画面（誤りと不足の表示）",
+      "user": "保護者",
+      "purpose": "申し込む前に、入力の誤りと添付書類の不足を一覧で見て、直す。",
+      "items": "誤りのある欄と理由、足りない添付書類",
+      "from": [
+        "R-02"
+      ]
+    },
+    {
+      "id": "SG-03",
+      "section": "gamen",
+      "title": "受付簿の画面（係用）",
+      "user": "こども家庭課 放課後児童係（受付担当）",
+      "purpose": "申込の一覧を見て、クラブ・学年・添付書類の有無で絞り込む。CSVで書き出す。",
+      "items": "受付番号、申込日、クラブ、学年、利用の理由、添付書類の有無",
+      "from": [
+        "R-03"
+      ]
+    },
+    {
+      "id": "SG-04",
+      "section": "gamen",
+      "title": "選考の画面（係用）",
+      "user": "こども家庭課 放課後児童係（係長・審査担当）",
+      "purpose": "定員を超えたクラブについて、点数（見本では架空の基準）と順位、入所・待機の案を見る。",
+      "items": "受付番号、学年、点数、順位、入所・待機の案",
+      "from": [
+        "R-04"
+      ]
+    },
+    {
+      "id": "SC-01",
+      "section": "chohyo",
+      "title": "利用決定通知書",
+      "to": "保護者",
+      "items": "宛名、児童の氏名、クラブ、利用の開始日、問い合わせ先",
+      "from": [
+        "R-05"
+      ]
+    },
+    {
+      "id": "SC-02",
+      "section": "chohyo",
+      "title": "待機通知書",
+      "to": "保護者",
+      "items": "宛名、児童の氏名、クラブ、待機の順番、問い合わせ先",
+      "from": [
+        "R-05"
+      ]
+    },
+    {
+      "id": "SC-03",
+      "section": "chohyo",
+      "title": "選考の順位の一覧（係内の確認用）",
+      "to": "係内",
+      "items": "クラブ、受付番号、点数、順位、入所・待機の案",
+      "from": [
+        "R-04"
+      ]
+    },
+    {
+      "id": "SD-01",
+      "section": "data",
+      "title": "保護者の氏名",
+      "meaning": "例：架空 花子",
+      "personal": "当たる",
+      "from": [
+        "SG-01"
+      ]
+    },
+    {
+      "id": "SD-02",
+      "section": "data",
+      "title": "住所",
+      "meaning": "例：架空市本町一丁目2番3号",
+      "personal": "当たる",
+      "from": [
+        "SG-01"
+      ]
+    },
+    {
+      "id": "SD-03",
+      "section": "data",
+      "title": "電話番号",
+      "meaning": "例：090-0000-0000",
+      "personal": "当たる",
+      "from": [
+        "SG-01"
+      ]
+    },
+    {
+      "id": "SD-04",
+      "section": "data",
+      "title": "児童の氏名",
+      "meaning": "例：架空 太郎",
+      "personal": "当たる",
+      "from": [
+        "SG-01"
+      ]
+    },
+    {
+      "id": "SD-05",
+      "section": "data",
+      "title": "学年",
+      "meaning": "1年〜6年",
+      "personal": "当たらない",
+      "from": [
+        "SG-01"
+      ]
+    },
+    {
+      "id": "SD-06",
+      "section": "data",
+      "title": "利用したいクラブ",
+      "meaning": "例：架空第一小クラブ",
+      "personal": "当たらない",
+      "from": [
+        "SG-01"
+      ]
+    },
+    {
+      "id": "SD-07",
+      "section": "data",
+      "title": "利用の理由",
+      "meaning": "就労・疾病・介護・その他",
+      "personal": "当たる",
+      "from": [
+        "SG-01"
+      ]
+    },
+    {
+      "id": "SD-08",
+      "section": "data",
+      "title": "就労の時間（月）",
+      "meaning": "就労のときだけ。例：140",
+      "personal": "当たる",
+      "from": [
+        "SG-01"
+      ]
+    },
+    {
+      "id": "SD-09",
+      "section": "data",
+      "title": "ひとり親か",
+      "meaning": "はい・いいえ",
+      "personal": "当たる",
+      "from": [
+        "SG-01"
+      ]
+    },
+    {
+      "id": "SD-10",
+      "section": "data",
+      "title": "きょうだいの在籍",
+      "meaning": "同じクラブに在籍しているきょうだいがいるか",
+      "personal": "当たらない",
+      "from": [
+        "SG-01"
+      ]
+    },
+    {
+      "id": "SD-11",
+      "section": "data",
+      "title": "選考の点数",
+      "meaning": "選考の画面で計算する（架空の基準）",
+      "personal": "当たらない",
+      "from": [
+        "SG-04"
+      ]
+    },
+    {
+      "id": "SX-01",
+      "section": "gaibu",
+      "title": "受付簿のCSVを係の表計算へ渡す",
+      "partner": "係の表計算（これまでの受付簿）",
+      "direction": "渡す",
+      "content": "受付簿の画面から書き出したCSV（BOM付きのUTF-8）。",
+      "from": [
+        "R-03"
+      ]
+    }
+  ],
+  "open_questions": []
+}
