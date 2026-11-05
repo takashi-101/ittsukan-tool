@@ -1,0 +1,12 @@
+{
+  "mcpServers": {
+    "ittsukan-tool": {
+      "command": "python",
+      "args": [
+        "C:\Users\<ユーザー名>\work\ittsukan-tool\mcp\ittsukan_mcp.py",
+        "--cases",
+        "C:\Users\<ユーザー名>\work\ittsukan-tool\cases"
+      ]
+    }
+  }
+}

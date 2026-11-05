@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'">
+<meta name="referrer" content="no-referrer">
+<meta name="color-scheme" content="light dark">
+<title>一気通貫ツール</title>
+<link rel="stylesheet" href="common/style.css?v=1.0.0">
+</head>
+<body>
+<a class="visually-hidden" href="#main">本文へ移動</a>
+<header class="site-header">
+  <div class="wrap">
+    <h1>一気通貫ツール</h1>
+    <p class="lead">システム開発の7つの工程（要件定義から現場への定着まで）を、1本で通して扱う道具です。詰まっている工程だけを開いても使えます。</p>
+    <ol class="flow" aria-label="7つの工程の流れ">
+      <li>要件定義</li><li>基本設計</li><li>詳細設計</li><li>実装</li><li>テスト</li><li>導入</li><li>定着</li>
+    </ol>
+  </div>
+</header>
+
+<main id="main" class="wrap">
+  <section class="card" aria-labelledby="h-how">
+    <h2 id="h-how">使い方</h2>
+    <ul>
+      <li><strong>詰まっている工程から入れます。</strong>下の一覧から工程を開くと、その工程だけで入力・点検・書き出しができます。</li>
+      <li>工程ごとの結果は<strong>工程票（こうていひょう）</strong>というファイル（JSON）にまとまり、次の工程で読み込めます。人が読む用のMarkdownでも書き出せます。</li>
+      <li><strong>AIは使わなくても動きます。</strong>AIを使うときは、普段使っているAIアプリ（Claude Desktop、LM Studio）から、このツールのMCPサーバー（AIアプリと道具をつなぐ仕組み）を呼び出します。追加の料金はかかりません。</li>
+      <li>入力した内容は、このブラウザの中にだけ保存します。どこにも送信しません。</li>
+    </ul>
+    <div class="button-row">
+      <button type="button" class="primary" id="btn-sample">見本案件（放課後児童クラブの利用申請）を7工程すべてに読み込む</button>
+      <button type="button" class="secondary" id="btn-export">7工程をまとめて書き出す</button>
+      <label class="button secondary" for="file-bundle">まとめたファイルを読み込む</label>
+      <input type="file" id="file-bundle" accept=".json,application/json" class="visually-hidden">
+      <button type="button" class="link" id="btn-clear">このブラウザの工程票を消す</button>
+    </div>
+    <p id="home-msg" class="msg" role="status" aria-live="polite"></p>
+  </section>
+
+  <h2 class="section-title">7つの工程</h2>
+  <div class="stage-grid" id="stage-grid"></div>
+
+  <section class="card" aria-labelledby="h-through">
+    <h2 id="h-through">通しの点検（要件定義から定着まで）</h2>
+    <p class="muted">各工程の工程票を、前の工程の工程票と突き合わせて点検します（AIは使いません）。番号のつながりと、前の工程の項目の抜けを調べます。</p>
+    <p id="through-summary" class="check-summary" role="status" aria-live="polite"></p>
+    <div class="table-wrap">
+      <table class="tbl">
+        <thead><tr><th scope="col">工程</th><th scope="col">項目</th><th scope="col">要対応</th><th scope="col">主な要対応</th></tr></thead>
+        <tbody id="through-body"></tbody>
+      </table>
+    </div>
+  </section>
+</main>
+
+<footer class="site-footer">
+  <div class="wrap">
+    <p>見本案件の市・クラブ・数字・選考の点数の決まりは、すべて架空のものです。選考の決まりは「架空の基準」で、実在の自治体の基準ではありません。</p>
+    <p>入力した内容は、このブラウザの中にだけ保存します。どこにも送信しません。</p>
+  </div>
+</footer>
+
+<script src="common/schema.js?v=1.0.0"></script>
+<script src="common/core.js?v=1.0.0"></script>
+<script src="common/samples.js?v=1.0.0"></script>
+<script src="common/home.js?v=1.0.0"></script>
+</body>
+</html>
