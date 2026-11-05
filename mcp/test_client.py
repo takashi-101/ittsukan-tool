@@ -161,6 +161,29 @@ def protocol_tests():
         t2, _ = call("check_sheet", case="new-case", stage="yoken")
         check("check_sheet：必須の欄の空きを知らせる", "「内容」が空です" in t2 and "「優先度」が空です" in t2, t2)
 
+        # 手元の小さなモデルがよく送る形
+        t, err = call("write_items", case="str-case", stage="yoken",
+                      items='[{"section":"kino","title":"文字で送った一覧","detail":"x","priority":"必須"}]')
+        check("write_items：文字（JSON）で送られた一覧も読む", not err and "足した：R-01" in t, t)
+        t, err = call("write_items", case="str-case", stage="yoken",
+                      items='{"section":"kino","title":"1件だけのオブジェクト","detail":"x","priority":"必須"}')
+        check("write_items：1件だけのオブジェクトも一覧として読む", not err and "足した：R-02" in t, t)
+        t, err = call("write_items", case="str-case", stage="yoken", delete="R-02")
+        check("write_items：消す番号は文字でも読む", not err and "消した：R-02" in t, t)
+        t, err = call("write_items", case="str-case", stage="yoken", items='[{"section":"kino",')
+        check("write_items：読めない文字の一覧は、理由を返して断る", err and "JSONの一覧" in t, t)
+        t, err = call("write_items", case="str-case", stage="yoken", items="Webで申し込める")
+        check("write_items：一覧でない文字は、書き方の例を添えて断る", err and "一覧（配列）" in t and "例" in t, t)
+        t, err = call("read_items", case="houkago-club", stage="shosai", cursor="5")
+        check("read_items：数だけの文字の cursor は読む", not err and "DP-0" not in t.split("\n")[0], t)
+        for bad in ("next", "cursor=5", "", True, -1, 9999):
+            t, err = call("read_items", case="houkago-club", stage="shosai", cursor=bad)
+            if bad == "":
+                ok_bad = not err  # 空は「初めから」
+            else:
+                ok_bad = err and ("cursor は数にしてください" in t or "範囲の外" in t) and "思わぬ問題" not in t
+            check("read_items：cursor=%s は%s" % (json.dumps(bad, ensure_ascii=False), "初めから読む" if bad == "" else "理由を返して断る"), ok_bad, t)
+
         # 食い違いの印
         t, err = call("record_mark", case="houkago-club", tr_id="TR-01", type="寄せた", output_quote="点数の低い児童は利用できません。",
                       request_quote="定員までを入所、残りを待機とする。", reason="待機を利用できないと強めている")
@@ -216,16 +239,33 @@ TASKS = [
 ]
 
 
+def lmstudio_version():
+    """LM Studio の版（アプリの package.json）と、lms の CLI commit。"""
+    parts = []
+    for p in (Path(os.environ.get("LOCALAPPDATA", "")) / "Programs" / "LM Studio" / "resources" / "app" / "package.json",
+              Path("/Applications/LM Studio.app/Contents/Resources/app/package.json")):
+        try:
+            parts.append("アプリ " + json.loads(p.read_text(encoding="utf-8"))["version"])
+            break
+        except Exception:
+            pass
+    try:
+        out = subprocess.run(["lms", "version"], capture_output=True, text=True, encoding="utf-8", errors="replace", timeout=30).stdout
+        for line in out.splitlines():
+            if "commit" in line:
+                parts.append("lms " + line.strip())
+    except Exception:
+        pass
+    return "、".join(parts) or "（版を読めませんでした）"
+
+
 def lmstudio_tests(models):
     try:
         listed = [m["id"] for m in http_json(LMSTUDIO + "/models", timeout=10)["data"]]
     except Exception as e:
         print("LM Studio に接続できません（%s）。lms server start で起動してください：%s" % (LMSTUDIO, e))
         return []
-    try:
-        lms_ver = subprocess.run(["lms", "version"], capture_output=True, text=True, timeout=30).stdout.strip().splitlines()[0]
-    except Exception:
-        lms_ver = "（lms version を読めませんでした）"
+    lms_ver = lmstudio_version()
     report = []
     for model in models:
         if model not in listed:
@@ -245,7 +285,7 @@ def lmstudio_tests(models):
             messages = [
                 {"role": "system", "content": "あなたは一気通貫ツールの工程票を扱う補助役です。答える前に、必ず道具（tools）を呼んで確かめてください。返事は日本語で短く。"},
                 {"role": "user", "content": task["prompt"]}]
-            calls, answer, t0, error = [], "", time.time(), ""
+            calls, answer, t0, error, tool_errors = [], "", time.time(), "", []
             try:
                 for _ in range(6):
                     r = http_json(LMSTUDIO + "/chat/completions", {"model": model, "messages": messages, "tools": oa_tools, "tool_choice": "auto", "temperature": 0})
@@ -262,7 +302,9 @@ def lmstudio_tests(models):
                         except ValueError:
                             args = {}
                         calls.append((name, args))
-                        text, _ = c.call(name, **args) if name in [t["name"] for t in mcp_tools] else ("道具「%s」はありません" % name, True)
+                        text, is_err = c.call(name, **args) if name in [t["name"] for t in mcp_tools] else ("道具「%s」はありません" % name, True)
+                        if is_err or text.startswith("書き込みませんでした"):
+                            tool_errors.append(text.replace("\n", " ")[:100])
                         messages.append({"role": "tool", "tool_call_id": tc.get("id", ""), "content": text})
             except Exception as e:
                 error = "%s: %s" % (type(e).__name__, e)
@@ -271,8 +313,11 @@ def lmstudio_tests(models):
             print("  %s %s（%.0f秒）道具：%s" % ("OK" if passed else "NG", task["name"], secs, "、".join(n for n, _ in calls) or "なし"))
             if error:
                 print("     誤り：" + error)
+            if tool_errors and not passed:
+                print("     道具の返事（誤り）：" + tool_errors[0])
             report.append({"model": model, "task": task["name"], "passed": passed, "secs": round(secs), "calls": [n for n, _ in calls],
-                           "answer": (answer or error).strip().replace("\n", " ")[:120]})
+                           "answer": (answer or error).strip().replace("\n", " ")[:120],
+                           "tool_error": tool_errors[0] if tool_errors and not passed else ""})
         c.close()
         shutil.rmtree(tmp, ignore_errors=True)
     if report:
@@ -294,9 +339,9 @@ def write_report(report, lms_ver):
     lines = [head + "## %s" % datetime.now().strftime("%Y-%m-%d %H:%M"), "",
              "- 環境：%s %s、メモリ %sGB、%s" % (platform.system(), platform.release(), mem or "?", cpu or "?"),
              "- LM Studio：%s" % lms_ver, "",
-             "| モデル | 課題 | 結果 | 時間 | 呼んだ道具 | 返事（先頭） |", "|---|---|---|---|---|---|"]
+             "| モデル | 課題 | 結果 | 時間 | 呼んだ道具 | 返事（先頭）／失敗のときの道具の返事 |", "|---|---|---|---|---|---|"]
     for r in report:
-        lines.append("| %s | %s | %s | %d秒 | %s | %s |" % (r["model"], r["task"], "成功" if r["passed"] else "失敗", r["secs"], "、".join(r["calls"]) or "なし", r["answer"].replace("|", "｜")))
+        lines.append("| %s | %s | %s | %d秒 | %s | %s |" % (r["model"], r["task"], "成功" if r["passed"] else "失敗", r["secs"], "、".join(r["calls"]) or "なし", (r["answer"] + (" ／ 道具の返事：" + r["tool_error"] if r.get("tool_error") else "")).replace("|", "｜")))
     lines.append("")
     with p.open("a", encoding="utf-8", newline="\n") as f:
         f.write("\n".join(lines) + "\n")

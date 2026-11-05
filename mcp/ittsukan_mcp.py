@@ -130,9 +130,46 @@ def cut(text, n=FIELD_CUT):
     return t if len(t) <= n else t[:n] + "…（続きは item_id を指定して read_items）"
 
 
+def parse_cursor(cursor):
+    """続きの位置。数（または数だけの文字）を受け付け、それ以外は理由を返す。"""
+    if cursor is None or cursor == "":
+        return 0
+    if isinstance(cursor, bool):
+        raise ToolError("cursor は数にしてください（前の返事の「cursor=数」の数。初めから読むときは付けない）")
+    if isinstance(cursor, int):
+        return cursor
+    if isinstance(cursor, float) and cursor.is_integer():
+        return int(cursor)
+    if isinstance(cursor, str) and re.fullmatch(r"\s*\d+\s*", cursor):
+        return int(cursor)
+    raise ToolError("cursor は数にしてください（受け取った値：%s）。前の返事の「cursor=数」の数を付けるか、初めから読むときは付けないでください" % json.dumps(cursor, ensure_ascii=False)[:40])
+
+
+def parse_list(value, name):
+    """一覧の引数。一覧のほか、JSONの文字列で送られた一覧（手元の小さなモデルがよく送る形）も読む。"""
+    if value is None or value == "":
+        return []
+    if isinstance(value, str):
+        t = value.strip()
+        if t.startswith("[") or t.startswith("{"):
+            try:
+                value = json.loads(t)
+            except ValueError:
+                raise ToolError("%s を読めません。JSONの一覧（[ … ]）にしてください" % name)
+        elif name == "delete":
+            value = [x for x in re.split(r"[、,，\s]+", t) if x]
+        else:
+            raise ToolError("%s は一覧（配列）にしてください。例：[{\"section\":\"kino\",\"title\":\"…\"}]" % name)
+    if isinstance(value, dict):
+        value = [value]
+    if not isinstance(value, list):
+        raise ToolError("%s は一覧（配列）にしてください" % name)
+    return value
+
+
 def page(lines, cursor, footer_hint):
     """行の一覧を MAX_CHARS 以内で返す。続きがあれば cursor を示す。"""
-    start = int(cursor or 0)
+    start = parse_cursor(cursor)
     if start < 0 or (start and start >= len(lines)):
         raise ToolError("cursor が範囲の外です（0〜%d）" % max(0, len(lines) - 1))
     out, size, i = [], 0, start
@@ -281,10 +318,8 @@ def t_write_items(a):
         sheet = K.new_sheet(sid, {"id": d.name, "name": a.get("case_name") or d.name})
     elif a.get("case_name"):
         sheet["case"]["name"] = K.s(a["case_name"])
-    items = a.get("items") or []
-    deletes = a.get("delete") or []
-    if not isinstance(items, list) or not isinstance(deletes, list):
-        raise ToolError("items と delete は一覧（配列）にしてください")
+    items = parse_list(a.get("items"), "items")
+    deletes = parse_list(a.get("delete"), "delete")
     if not items and not deletes:
         raise ToolError("items（足す・直す項目）か delete（消す番号）を指定してください")
     work = json.loads(json.dumps(sheet))
