@@ -165,6 +165,8 @@ python mcp/test_client.py
 
 MCPサーバーのテスト（初期化、7つの道具、区切り、書き込みの誤りの扱い、案件フォルダの外を読み書きしないこと、記録）。
 
+推奨モデルは qwen3.5-4b。llama-3.2-3b は書き込みと読み取りの課題に失敗するため推奨しない（記録は [mcp/model-check.md](mcp/model-check.md)）。
+
 ```bash
 python tools/sync_common.py --check
 ```
