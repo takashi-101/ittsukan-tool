@@ -202,11 +202,11 @@ python tools/sync_common.py --check
 
 | 機能 | 使った学習記録・バッジ（Credly） |
 |---|---|
-| 要件定義：現状の業務 → 困りごと → 目的 → 必要な機能 の順に書き出す | Enterprise Design Thinking Practitioner（IBM SkillsBuild）、Process Mining - From Theory to Execution（Celonis） |
-| 基本設計：画面・帳票の形の下書き、機能と画面・帳票の対応表 | Enterprise Design Thinking Practitioner（IBM SkillsBuild）、Google AI for App Building（Coursera） |
-| 基本設計：データ項目の個人情報の印、どこにも通信しない作り | AWS Knowledge: Security Champion、AWS Knowledge: Data Protection & Disaster Recovery（Amazon Web Services Training and Certification） |
+| 要件定義：現状の業務 → 困りごと → 目的 → 必要な機能 の順に書き出す | Enterprise Design Thinking Practitioner（IBM SkillsBuild）、Google AI for App Building（Coursera） |
+| 基本設計：画面・帳票の形の下書き | Enterprise Design Thinking Practitioner（IBM SkillsBuild） |
 | 実装：AIへの実装依頼文の下書き、試作の雛形 | Google Prompting Essentials、Google AI for App Building（Coursera） |
-| 導入：切り替えの段取り（並行して使う期間と元に戻す方法） | AWS Knowledge: Migration Foundations（Amazon Web Services Training and Certification） |
+| テスト：AIへの依頼と出力の食い違いを確かめる | Google AI Fundamentals、Google Prompting Essentials（Coursera） |
+| どこにも通信しない作り（全工程） | AWS Knowledge: Security Champion（Amazon Web Services Training and Certification） |
 | AIアプリから使う（MCPサーバー） | Build AI Agents Using MCP（Coursera） |
 
 ## ライセンス
