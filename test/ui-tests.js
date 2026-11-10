@@ -82,6 +82,38 @@
     ok(/要対応/.test(summary()), '下書きは使う人が空なので要対応が出る');
   });
 
+  test('画面：基本設計 — 形の下書き・対応表・データ項目の下書き', async function () {
+    clearStore();
+    await open('stages/02-kihon-sekkei/index.html');
+    click('#it-sample');
+    click('#tool-wire');
+    var blocks = d.querySelectorAll('#tool-wire-area .wire-block');
+    eq(blocks.length, 7, '画面4件と帳票3件');
+    eq(d.querySelector('[data-wire="SG-01"]').getAttribute('data-kind'), 'form', '申込の画面は入力の形');
+    eq(d.querySelector('[data-wire="SG-03"]').getAttribute('data-kind'), 'list', '受付簿は一覧の形');
+    eq(d.querySelector('[data-wire="SC-01"]').getAttribute('data-kind'), 'sheet', '通知書は1枚の書類の形');
+    ok(d.querySelector('[data-wire="SG-01"]').textContent.indexOf('個人情報') >= 0, '個人情報の印');
+    ok(d.querySelector('[data-wire="SG-01"]').textContent.indexOf('○ 就労') >= 0, '選択肢はデータ項目の意味・例から');
+    click('#tool-wire-print');
+    eq(w.__printed, 1, '印刷');
+    click('#tool-matrix');
+    var rows = d.querySelectorAll('#tool-matrix-area tbody tr');
+    eq(rows.length, 6, '機能6件');
+    eq(d.querySelectorAll('#tool-matrix-area tr[data-state="要対応"]').length, 0, '必須の機能はすべて出てくる');
+    eq(d.querySelectorAll('#tool-matrix-area tr[data-state="見送り"]').length, 1, 'R-06 は見送り');
+    var KH = w.IttsukanKihon;
+    var drafts = KH.draftDataItems(w.IttsukanUI.getSheet());
+    ok(drafts.length > 0 && drafts.every(function (x) { return x.personal !== '当たらない'; }), '当たらないとは決めない');
+    eq(drafts.filter(function (x) { return x.title === '宛名'; })[0].personal, '当たる', '宛名は個人情報の候補');
+    var before = w.IttsukanUI.getSheet().items.length;
+    click('#tool-draft-data');
+    eq(w.IttsukanUI.getSheet().items.length, before + drafts.length, '下書きの件数');
+    eq(KH.draftDataItems(w.IttsukanUI.getSheet()).length, 0, '二度は足さない');
+    ok(!/要対応 [1-9]/.test(summary()), summary());
+    eq(KH.splitItems('氏名、住所,電話番号\n氏名').join('|'), '氏名|住所|電話番号', '区切りと重なり');
+    eq(fetchCalls, 0, '通信しない');
+  });
+
   test('画面：要件定義 — 業務棚卸しのJSONを読み込める', async function () {
     clearStore();
     await open('stages/01-yoken/index.html');
