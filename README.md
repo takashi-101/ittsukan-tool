@@ -9,7 +9,7 @@
 | この工程で詰まっている会社向け | できること |
 |---|---|
 | **要件定義**：何から決めればよいか分からない、現場の話がまとまらない | 現状の業務 → 困りごと → 目的 → 必要な機能 の順に書き出し、つながっていない困りごとや、機能の無い目的を知らせる。業務棚卸し（gyomu-tanaoroshi）のJSONから現状の業務を読み込める |
-| **基本設計**：要件は出たが、画面や帳票の形が浮かばない | 必要な機能から画面の下書きを作り、どの画面・帳票にも出てこない必須の機能を知らせる |
+| **基本設計**：要件は出たが、画面や帳票の形が浮かばない | 必要な機能から画面の下書きを作り、書いた項目から画面・帳票の形（入力の形・一覧の形・1枚の書類の形）を描いて印刷する。項目から扱うデータ項目を拾い出し、機能と画面・帳票の対応表で、どこにも出てこない必須の機能を知らせる |
 | **詳細設計**：画面は決まったが、中でどう動かすかを書けない | 処理の手順・データの型・入力チェック・エラー時の扱いを書き、AIに渡せる仕様書（Markdown）にする。入力チェックは申請書類の確認ツール（shinsei-fubi-check）の設定として書き出せる |
 | **実装**：仕様はあるが、試作やデバッグ（不具合の原因探し）ができない | AIへの実装依頼文の下書き、画面の形と入力チェックだけの試作の雛形（1ファイルのHTML）を作る。エラーの文章から原因の候補と確かめ方を出す |
 | **テスト**：できあがったものを、何をもって受け取ってよいか判断できない | 要件ごとの確認項目を作り、AIへの依頼と出力の食い違い（落とした・足した・選んだ・寄せた）に印を付け、採る・採らないと検収の判断を残す |
@@ -190,6 +190,7 @@ python tools/sync_common.py --check
 ## 限界
 
 - 点検は決まり（必須の欄、番号のつながり、抜け）で行います。中身が正しいか、足りているかは人が判断します。
+- 基本設計の形の下書きは、項目の名前と種類から決まりで描きます。配置や見た目のデザインを決めるものではありません。個人情報に当たるかの印は候補で、決めるのは人です。
 - 試作の雛形は、画面の形と入力チェックだけです。受付簿への保存や選考の計算は入っていません。
 - エラーの原因候補は、よくあるエラーの表から引きます。表に無いエラーは、AIアプリに聞いてください。
 - 画面の工程票はブラウザごとに保存します。別のPCやブラウザで続けるときは、JSONで書き出して読み込みます。
@@ -197,9 +198,16 @@ python tools/sync_common.py --check
 
 ## 使った知識基盤
 
-| 機能 | 使った学習記録・バッジ |
+バッジは Credly の公開プロフィール（https://www.credly.com/users/takashi-higuchi.2d0eec27）で照会できます。
+
+| 機能 | 使った学習記録・バッジ（Credly） |
 |---|---|
-| | |
+| 要件定義：現状の業務 → 困りごと → 目的 → 必要な機能 の順に書き出す | Enterprise Design Thinking Practitioner（IBM SkillsBuild）、Process Mining - From Theory to Execution（Celonis） |
+| 基本設計：画面・帳票の形の下書き、機能と画面・帳票の対応表 | Enterprise Design Thinking Practitioner（IBM SkillsBuild）、Google AI for App Building（Coursera） |
+| 基本設計：データ項目の個人情報の印、どこにも通信しない作り | AWS Knowledge: Security Champion、AWS Knowledge: Data Protection & Disaster Recovery（Amazon Web Services Training and Certification） |
+| 実装：AIへの実装依頼文の下書き、試作の雛形 | Google Prompting Essentials、Google AI for App Building（Coursera） |
+| 導入：切り替えの段取り（並行して使う期間と元に戻す方法） | AWS Knowledge: Migration Foundations（Amazon Web Services Training and Certification） |
+| AIアプリから使う（MCPサーバー） | Build AI Agents Using MCP（Coursera） |
 
 ## ライセンス
 
