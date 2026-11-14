@@ -198,12 +198,14 @@ python tools/sync_common.py --check
 
 ## 根拠（学習）
 
-| 機能 | 裏付けになる学習（発行元・名称・発行日） | 照会先（Credly） |
-|---|---|---|
-| 要件定義：現状の業務 → 困りごと → 目的 → 必要な機能 の順に書き出す | IBM SkillsBuild「Enterprise Design Thinking Practitioner」2026年2月4日 | https://www.credly.com/badges/e48a9c98-f7f7-4354-8520-f74492b3754b |
-| 実装：AIへの実装依頼文の下書き | Coursera「Google Prompting Essentials」2026年10月13日 | https://www.credly.com/badges/c5305332-c47b-480d-85e0-678a72908a79 |
-| どこにも通信しない作り（全工程） | Amazon Web Services Training and Certification「AWS Knowledge: Security Champion - Training Badge」2025年11月10日 | https://www.credly.com/badges/ddab077d-58eb-4807-bec1-69e5c6aeb9a5 |
-| AIアプリから使う（MCPサーバー） | Coursera（認定：IBM）「Build AI Agents Using MCP」2026年11月3日 | https://www.credly.com/badges/eb0ddb53-3a26-48ba-95d6-cbc242ed24bc |
+| 求められる力 | 機能 | 裏付けになる学習（発行元・名称・発行日） | 照会先（Credly） |
+|---|---|---|---|
+| 業務改革・AX推進（課題の整理から定着まで） | 要件定義：現状の業務 → 困りごと → 目的 → 必要な機能 の順に書き出す | IBM SkillsBuild「Enterprise Design Thinking Practitioner」2026年2月4日 | https://www.credly.com/badges/e48a9c98-f7f7-4354-8520-f74492b3754b |
+| 生成AIの業務活用 | 実装：AIへの実装依頼文の下書き | Coursera「Google Prompting Essentials」2026年10月13日 | https://www.credly.com/badges/c5305332-c47b-480d-85e0-678a72908a79 |
+| セキュリティ・ガバナンス | どこにも通信しない作り（全工程） | Amazon Web Services Training and Certification「AWS Knowledge: Security Champion - Training Badge」2025年11月10日 | https://www.credly.com/badges/ddab077d-58eb-4807-bec1-69e5c6aeb9a5 |
+| 生成AI・LLMの実装（RAG・エージェント・MCP） | AIアプリから使う（MCPサーバー） | Coursera（認定：IBM）「Build AI Agents Using MCP」2026年11月3日 | https://www.credly.com/badges/eb0ddb53-3a26-48ba-95d6-cbc242ed24bc |
+
+「求められる力」の分け方は、[プロフィール](https://github.com/takashi-101) の「FDE・AXで求められる力と、その根拠」と同じです。
 
 ## ライセンス
 
