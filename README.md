@@ -196,18 +196,14 @@ python tools/sync_common.py --check
 - 画面の工程票はブラウザごとに保存します。別のPCやブラウザで続けるときは、JSONで書き出して読み込みます。
 - 業務棚卸しの形で書き出した手順書には、作業時間が入りません（業務棚卸しのツールで入れてください）。
 
-## 使った知識基盤
+## 根拠（学習）
 
-バッジは Credly の公開プロフィール（https://www.credly.com/users/takashi-higuchi.2d0eec27）で照会できます。
-
-| 機能 | 使った学習記録・バッジ（Credly） |
-|---|---|
-| 要件定義：現状の業務 → 困りごと → 目的 → 必要な機能 の順に書き出す | Enterprise Design Thinking Practitioner（IBM SkillsBuild）、Google AI for App Building（Coursera） |
-| 基本設計：画面・帳票の形の下書き | Enterprise Design Thinking Practitioner（IBM SkillsBuild） |
-| 実装：AIへの実装依頼文の下書き、試作の雛形 | Google Prompting Essentials、Google AI for App Building（Coursera） |
-| テスト：AIへの依頼と出力の食い違いを確かめる | Google AI Fundamentals、Google Prompting Essentials（Coursera） |
-| どこにも通信しない作り（全工程） | AWS Knowledge: Security Champion（Amazon Web Services Training and Certification） |
-| AIアプリから使う（MCPサーバー） | Build AI Agents Using MCP（Coursera） |
+| 機能 | 裏付けになる学習（発行元・名称・発行日） | 照会先（Credly） |
+|---|---|---|
+| 要件定義：現状の業務 → 困りごと → 目的 → 必要な機能 の順に書き出す | IBM SkillsBuild「Enterprise Design Thinking Practitioner」2026年2月4日 | https://www.credly.com/badges/e48a9c98-f7f7-4354-8520-f74492b3754b |
+| 実装：AIへの実装依頼文の下書き | Coursera「Google Prompting Essentials」2026年10月13日 | https://www.credly.com/badges/c5305332-c47b-480d-85e0-678a72908a79 |
+| どこにも通信しない作り（全工程） | Amazon Web Services Training and Certification「AWS Knowledge: Security Champion - Training Badge」2025年11月10日 | https://www.credly.com/badges/ddab077d-58eb-4807-bec1-69e5c6aeb9a5 |
+| AIアプリから使う（MCPサーバー） | Coursera（認定：IBM）「Build AI Agents Using MCP」2026年11月3日 | https://www.credly.com/badges/eb0ddb53-3a26-48ba-95d6-cbc242ed24bc |
 
 ## ライセンス
 
